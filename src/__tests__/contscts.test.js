@@ -8,6 +8,7 @@ import userEvent from "@testing-library/user-event";
 import { rest } from "msw";
 import { Contacts } from "../pages/Contacts";
 import { serverTests } from "../serverTests";
+import { users } from "../__fixtures__/users";
 
 beforeAll(() => serverTests.listen());
 
@@ -123,5 +124,50 @@ describe("contacts data view mode", () => {
       "Mui-selected"
     );
     window.localStorage.clear();
+  });
+});
+
+describe("contacts filter", () => {
+  test("by default", async () => {
+    render(<Contacts />);
+    const loader = screen.getByTestId("contacts-loader");
+
+    await waitForElementToBeRemoved(loader);
+
+    expect(screen.queryAllByTestId("contacts-table-row")).toHaveLength(2);
+  });
+  test("by full name", async () => {
+    const inputFullNameValue = users[0].name.first;
+    render(<Contacts />);
+    const loader = screen.getByTestId("contacts-loader");
+
+    await waitForElementToBeRemoved(loader);
+
+    userEvent.type(
+      screen.getByRole("textbox", { name: /search by full name/i }),
+      inputFullNameValue
+    );
+    expect(screen.queryAllByTestId("contacts-table-row")).toHaveLength(1);
+    expect(
+      screen.queryByTestId("contacts-table-cell-full-name")
+    ).toHaveTextContent(inputFullNameValue);
+  });
+
+  test("should clear", async () => {
+    const inputFullNameValue = users[0].name.first;
+    render(<Contacts />);
+    const loader = screen.getByTestId("contacts-loader");
+
+    await waitForElementToBeRemoved(loader);
+
+    userEvent.type(
+      screen.getByRole("textbox", { name: /search by full name/i }),
+      inputFullNameValue
+    );
+    userEvent.click(screen.getByRole("button", { name: /clear/i }));
+    expect(screen.queryAllByTestId("contacts-table-row")).toHaveLength(2);
+    expect(
+      screen.getByRole("textbox", { name: /search by full name/i })
+    ).toHaveValue("");
   });
 });

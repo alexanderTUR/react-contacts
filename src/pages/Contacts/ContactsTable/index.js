@@ -31,6 +31,7 @@ export const ContactsTable = ({ data }) => {
             <TableRow
               key={contact.login.uuid}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              data-testid="contacts-table-row"
             >
               <TableCell>
                 <Avatar
@@ -38,7 +39,7 @@ export const ContactsTable = ({ data }) => {
                   src={contact.picture.thumbnail}
                 />
               </TableCell>
-              <TableCell>
+              <TableCell data-testid="contacts-table-cell-full-name">
                 {`${contact.name.title} ${contact.name.first} ${contact.name.last}`}
               </TableCell>
               <TableCell>

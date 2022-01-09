@@ -8,7 +8,7 @@ import { Box } from "@mui/material";
 import { ToggleDataViewMode } from "./ToggleDataViewMode";
 import { VIEW_MODES } from "../../constants/viewmodes";
 import { useDataViewMode } from "./useDataViewMode";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { ContactsFilters } from "./ContactsFilters";
 
 const filtersDefaultValue = {
@@ -40,16 +40,16 @@ export const Contacts = () => {
   const [dataViewMode, setDataViewMode] = useDataViewMode();
   const [filters, setFilters] = useState(filtersDefaultValue);
 
-  const updateFilter = (name, value) => {
+  const updateFilter = useCallback((name, value) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
       [name]: value,
     }));
-  };
+  }, []);
 
-  const clearFilters = () => {
+  const clearFilters = useCallback(() => {
     setFilters(filtersDefaultValue);
-  };
+  }, []);
 
   const filteredContacts = contacts.data
     .filter((contact) => filterByFullName(contact.name, filters.fullName))
